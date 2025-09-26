@@ -1,25 +1,30 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { within, userEvent, expect } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 
-import { Page } from './Page';
+import { expect, userEvent, within } from 'storybook/test';
+
+import MyPage from './Page.vue';
 
 const meta = {
   title: 'Example/Page',
-  component: Page,
+  component: MyPage,
+  render: () => ({
+    components: { MyPage },
+    template: '<my-page />',
+  }),
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof Page>;
+  // This component will have an automatically generated docsPage entry: https://storybook.js.org/docs/writing-docs/autodocs
+  tags: ['autodocs'],
+} satisfies Meta<typeof MyPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const LoggedOut: Story = {};
-
-// More on interaction testing: https://storybook.js.org/docs/writing-tests/interaction-testing
+// More on component testing: https://storybook.js.org/docs/writing-tests/interaction-testing
 export const LoggedIn: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: any) => {
     const canvas = within(canvasElement);
     const loginButton = canvas.getByRole('button', { name: /Log in/i });
     await expect(loginButton).toBeInTheDocument();
@@ -30,3 +35,5 @@ export const LoggedIn: Story = {
     await expect(logoutButton).toBeInTheDocument();
   },
 };
+
+export const LoggedOut: Story = {};
