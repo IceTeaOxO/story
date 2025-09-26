@@ -1,4 +1,4 @@
-name: Build and Deploy Storybook
+name: Deploy Storybook
 
 on:
   push:
@@ -8,11 +8,9 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-storybook:
     runs-on: ubuntu-latest
     
     steps:
@@ -28,24 +26,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 構建 Astro 專案
-      - name: Build Astro project
-        run: npm run build
-
-      # 構建 Storybook
+      # 只構建 Storybook
       - name: Build Storybook
         run: npm run build-storybook
         
-      # 將 Storybook 靜態文件複製到 Astro 構建目錄
-      - name: Copy Storybook to Astro dist
-        run: |
-          mkdir -p ./dist/storybook
-          cp -r ./storybook-static/* ./dist/storybook/
-        
-      # 部署到 GitHub Pages
+      # 直接部署 Storybook 靜態文件
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./storybook-static
           publish_branch: gh-pages
