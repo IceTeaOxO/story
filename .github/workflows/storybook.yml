@@ -8,32 +8,37 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy-storybook:
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+          
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-
+            
       - name: Install dependencies
-        run: npm install
-
-      # 只構建 Storybook
+        run: npm ci
+            
       - name: Build Storybook
         run: npm run build-storybook
-        
-      # 直接部署 Storybook 靜態文件
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+            
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+            
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./storybook-static
-          publish_branch: gh-pages
+          path: './storybook-static'
+            
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
